@@ -1,6 +1,6 @@
 <?php
-require_once 'settings/core.php';
-require_once 'controllers/product_controller.php';
+require_once '../settings/core.php';
+require_once '../controllers/product_controller.php';
 
 $is_logged_in = check_login();
 $customer_name = $is_logged_in ? get_user_name() : '';
