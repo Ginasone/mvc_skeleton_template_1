@@ -65,12 +65,20 @@ $is_admin = check_admin();
                         <a class="nav-link" href="#home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
+                        <a class="nav-link" href="all_product.php">All Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#menu">Menu</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                 </ul>
+                
+                <!-- Search Box -->
+                <form class="d-flex me-3" action="product_search_result.php" method="GET">
+                    <input class="form-control me-2" type="search" name="query" placeholder="Search products..." style="min-width: 200px;">
+                    <button class="btn btn-custom" type="submit">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
                 
                 <ul class="navbar-nav">
                     <?php if (!$is_logged_in): ?>
@@ -82,10 +90,20 @@ $is_admin = check_admin();
                             <a class="btn btn-custom" href="login/register.php">Register</a>
                         </li>
                     <?php elseif ($is_admin): ?>
-                        <!-- Logged in and admin: Logout | Category -->
+                        <!-- Logged in and admin: Logout | Category | Brand | Product -->
                         <li class="nav-item me-2">
                             <a class="btn btn-success" href="admin/category.php">
                                 <i class="fa fa-list me-1"></i>Category
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="btn btn-info" href="admin/brand.php">
+                                <i class="fa fa-tags me-1"></i>Brand
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="btn btn-warning" href="admin/product.php">
+                                <i class="fa fa-box me-1"></i>Product
                             </a>
                         </li>
                         <li class="nav-item dropdown">
@@ -97,6 +115,8 @@ $is_admin = check_admin();
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#"><i class="fa fa-user me-2"></i>Profile</a></li>
                                 <li><a class="dropdown-item" href="admin/category.php"><i class="fa fa-list me-2"></i>Manage Categories</a></li>
+                                <li><a class="dropdown-item" href="admin/brand.php"><i class="fa fa-tags me-2"></i>Manage Brands</a></li>
+                                <li><a class="dropdown-item" href="admin/product.php"><i class="fa fa-box me-2"></i>Manage Products</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
                             </ul>
