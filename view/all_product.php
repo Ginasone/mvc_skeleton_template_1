@@ -191,7 +191,7 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                     <div class="col-md-4 col-lg-3 mb-4">
                         <div class="card product-card">
                             <?php if (!empty($product['product_image'])): ?>
-                                <img src="../<?php echo htmlspecialchars($product['product_image']); ?>" 
+                                <img src="../<?php echo htmlspecialchars($product['product_image']); ?>"
                                      class="card-img-top product-image" 
                                      alt="<?php echo htmlspecialchars($product['product_title']); ?>">
                             <?php else: ?>
