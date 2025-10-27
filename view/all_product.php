@@ -1,5 +1,4 @@
 <?php
-// This file is in view/ folder, so use ../ to go up one level
 require_once '../settings/core.php';
 require_once '../controllers/product_controller.php';
 require_once '../controllers/category_controller.php';
