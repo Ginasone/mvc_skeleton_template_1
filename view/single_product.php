@@ -145,7 +145,7 @@ if (!$product) {
                 <div class="card">
                     <div class="card-body text-center">
                         <?php if (!empty($product['product_image'])): ?>
-                            <img src="<?php echo htmlspecialchars($product['product_image']); ?>" 
+                            <img src="../<?php echo htmlspecialchars($product['product_image']); ?>" 
                                  class="product-image" 
                                  alt="<?php echo htmlspecialchars($product['product_title']); ?>">
                         <?php else: ?>
