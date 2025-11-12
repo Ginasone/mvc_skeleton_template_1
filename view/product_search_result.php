@@ -347,6 +347,35 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                 window.location.href = 'all_product.php';
             }
         }
+        
+        // Add to cart function - MUST be global
+        function addToCart(productId, qty) {
+            qty = qty || 1; // Default to 1 if not specified
+            
+            $.ajax({
+                url: '../actions/add_to_cart_action.php',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    qty: qty
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        // Update cart count if element exists
+                        if ($('#cart-count').length) {
+                            $('#cart-count').text(response.cart_count);
+                        }
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Failed to add item to cart. Please try again.');
+                }
+            });
+        }
     </script>
 </body>
 </html>
