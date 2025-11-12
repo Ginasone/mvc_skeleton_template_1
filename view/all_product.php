@@ -127,6 +127,12 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                                 <i class="fa fa-box me-1"></i>Manage
                             </a>
                         </li>
+                        <li class="nav-item me-2">
+                            <a class="btn btn-info" href="cart.php">
+                                <i class="fa fa-shopping-cart me-1"></i>Cart
+                                <span class="badge bg-danger" id="cart-count" style="display:none;">0</span>
+                            </a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="fa fa-user-shield me-1"></i><?php echo htmlspecialchars($customer_name); ?>
@@ -136,11 +142,18 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                             </ul>
                         </li>
                     <?php else: ?>
+                        <li class="nav-item me-2">
+                            <a class="btn btn-info" href="cart.php">
+                                <i class="fa fa-shopping-cart me-1"></i>Cart
+                                <span class="badge bg-danger" id="cart-count" style="display:none;">0</span>
+                            </a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 <i class="fa fa-user me-1"></i><?php echo htmlspecialchars($customer_name); ?>
                             </a>
                             <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="my_orders.php">My Orders</a></li>
                                 <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
                             </ul>
                         </li>
@@ -320,6 +333,22 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                 },
                 error: function() {
                     alert('Failed to add item to cart. Please try again.');
+                }
+            });
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            $.ajax({
+                url: '../actions/get_cart_count_action.php',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success' && response.count > 0) {
+                        $('#cart-count').text(response.count).show();
+                    } else {
+                        $('#cart-count').hide();
+                    }
                 }
             });
         }
