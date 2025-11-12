@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once '../settings/core.php';
 require_once '../controllers/product_controller.php';
 require_once '../controllers/category_controller.php';
@@ -270,7 +274,7 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
     <script>
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                window.location.href = '../index.php?logout=1';
+                window.location.href = 'index.php?logout=1';
             }
         }
         
