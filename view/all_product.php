@@ -8,29 +8,8 @@ $is_logged_in = check_login();
 $customer_name = $is_logged_in ? get_user_name() : '';
 $is_admin = check_admin();
 
-// get search parameters
-$search_query = isset($_GET['query']) ? trim($_GET['query']) : '';
-$filter_category = isset($_GET['category']) ? (int)$_GET['category'] : 0;
-$filter_brand = isset($_GET['brand']) ? (int)$_GET['brand'] : 0;
-
-// perform search/filter
-$products = array();
-$search_title = '';
-
-if (!empty($search_query)) {
-    $products = search_products_ctr($search_query);
-    $search_title = 'Search Results for "' . htmlspecialchars($search_query) . '"';
-} elseif ($filter_category > 0) {
-    $products = filter_products_by_category_ctr($filter_category);
-    $search_title = 'Products in Category';
-} elseif ($filter_brand > 0) {
-    $products = filter_products_by_brand_ctr($filter_brand);
-    $search_title = 'Products by Brand';
-} else {
-    // no search criteria, redirect to all products
-    header('Location: all_product.php');
-    exit();
-}
+// get all products
+$products = view_all_products_ctr();
 
 // Ensure $products is always an array
 if ($products === false || !is_array($products)) {
@@ -61,7 +40,7 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $search_title; ?> - Taste of Africa</title>
+    <title>All Products - Taste of Africa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -122,14 +101,13 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                         <a class="nav-link" href="../index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="all_product.php">All Products</a>
+                        <a class="nav-link active" href="all_product.php">All Products</a>
                     </li>
                 </ul>
                 
                 <!-- Search Box -->
                 <form class="d-flex me-3" action="product_search_result.php" method="GET">
-                    <input class="form-control me-2" type="search" name="query" placeholder="Search products..." 
-                           value="<?php echo htmlspecialchars($search_query); ?>" required>
+                    <input class="form-control me-2" type="search" name="query" placeholder="Search products..." required>
                     <button class="btn btn-custom" type="submit">
                         <i class="fa fa-search"></i>
                     </button>
@@ -173,17 +151,9 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
     </nav>
 
     <div class="container mt-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
-                <li class="breadcrumb-item"><a href="all_product.php">Products</a></li>
-                <li class="breadcrumb-item active">Search Results</li>
-            </ol>
-        </nav>
-
         <!-- Filter Section -->
         <div class="filter-section">
-            <h5><i class="fa fa-filter me-2"></i>Narrow Your Search</h5>
+            <h5><i class="fa fa-filter me-2"></i>Filter Products</h5>
             <div class="row">
                 <div class="col-md-4">
                     <label class="form-label">By Category</label>
@@ -191,8 +161,7 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                         <option value="">All Categories</option>
                         <?php if ($all_categories): ?>
                             <?php foreach ($all_categories as $category): ?>
-                                <option value="<?php echo $category['cat_id']; ?>" 
-                                    <?php echo ($filter_category == $category['cat_id']) ? 'selected' : ''; ?>>
+                                <option value="<?php echo $category['cat_id']; ?>">
                                     <?php echo htmlspecialchars($category['cat_name']); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -205,8 +174,7 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                         <option value="">All Brands</option>
                         <?php if ($all_brands): ?>
                             <?php foreach ($all_brands as $brand): ?>
-                                <option value="<?php echo $brand['brand_id']; ?>"
-                                    <?php echo ($filter_brand == $brand['brand_id']) ? 'selected' : ''; ?>>
+                                <option value="<?php echo $brand['brand_id']; ?>">
                                     <?php echo htmlspecialchars($brand['brand_name']); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -219,25 +187,16 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                     </button>
                 </div>
             </div>
-            <?php if (!empty($search_query) || $filter_category > 0 || $filter_brand > 0): ?>
-                <div class="mt-3">
-                    <a href="all_product.php" class="btn btn-outline-secondary btn-sm">
-                        <i class="fa fa-times me-1"></i>Clear All Filters
-                    </a>
-                </div>
-            <?php endif; ?>
         </div>
 
-        <h2 class="text-primary mb-4"><?php echo $search_title; ?> (<?php echo $total_items; ?> results)</h2>
+        <h2 class="text-primary mb-4">All Products (<?php echo $total_items; ?>)</h2>
 
         <!-- Products Grid -->
         <div class="row">
             <?php if (!$products || count($products) == 0): ?>
                 <div class="col-12">
-                    <div class="alert alert-warning">
-                        <i class="fa fa-exclamation-triangle me-2"></i>
-                        No products found matching your criteria. 
-                        <a href="all_product.php" class="alert-link">View all products</a>
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle me-2"></i>No products available at the moment.
                     </div>
                 </div>
             <?php else: ?>
@@ -288,17 +247,9 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
         <?php if ($total_pages > 1): ?>
             <nav aria-label="Product pagination">
                 <ul class="pagination justify-content-center">
-                    <?php 
-                    $params = array();
-                    if (!empty($search_query)) $params[] = 'query=' . urlencode($search_query);
-                    if ($filter_category > 0) $params[] = 'category=' . $filter_category;
-                    if ($filter_brand > 0) $params[] = 'brand=' . $filter_brand;
-                    $param_string = implode('&', $params);
-                    
-                    for ($i = 1; $i <= $total_pages; $i++): 
-                    ?>
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                         <li class="page-item <?php echo ($i == $current_page) ? 'active' : ''; ?>">
-                            <a class="page-link" href="?<?php echo $param_string; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
                         </li>
                     <?php endfor; ?>
                 </ul>
@@ -326,14 +277,10 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
         function applyFilters() {
             var category = $('#filter-category').val();
             var brand = $('#filter-brand').val();
-            var query = '<?php echo addslashes($search_query); ?>';
             
             var url = 'product_search_result.php?';
             var params = [];
             
-            if (query) {
-                params.push('query=' + encodeURIComponent(query));
-            }
             if (category) {
                 params.push('category=' + category);
             }
@@ -344,11 +291,11 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
             if (params.length > 0) {
                 window.location.href = url + params.join('&');
             } else {
-                window.location.href = 'all_product.php';
+                alert('Please select at least one filter');
             }
         }
         
-        // Add to cart function - MUST be global
+        // Add to cart function
         function addToCart(productId, qty) {
             qty = qty || 1; // Default to 1 if not specified
             
