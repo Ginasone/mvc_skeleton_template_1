@@ -67,7 +67,7 @@ if (!$product) {
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="index.php">
+            <a class="navbar-brand" href="../index.php">
                 <i class="fa fa-utensils me-2"></i>Taste of Africa
             </a>
             
@@ -78,7 +78,7 @@ if (!$product) {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
+                        <a class="nav-link" href="../index.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="all_product.php">All Products</a>
@@ -96,14 +96,14 @@ if (!$product) {
                 <ul class="navbar-nav">
                     <?php if (!$is_logged_in): ?>
                         <li class="nav-item me-2">
-                            <a class="btn btn-outline-secondary" href="login/login.php">Login</a>
+                            <a class="btn btn-outline-secondary" href="../login/login.php">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-custom" href="login/register.php">Register</a>
+                            <a class="btn btn-custom" href="../login/register.php">Register</a>
                         </li>
                     <?php elseif ($is_admin): ?>
                         <li class="nav-item me-2">
-                            <a class="btn btn-success" href="admin/product.php">
+                            <a class="btn btn-success" href="../admin/product.php">
                                 <i class="fa fa-box me-1"></i>Manage
                             </a>
                         </li>
@@ -133,7 +133,7 @@ if (!$product) {
     <div class="container mt-4 mb-5">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
                 <li class="breadcrumb-item"><a href="all_product.php">Products</a></li>
                 <li class="breadcrumb-item active"><?php echo htmlspecialchars($product['product_title']); ?></li>
             </ol>
@@ -147,7 +147,8 @@ if (!$product) {
                         <?php if (!empty($product['product_image'])): ?>
                             <img src="../<?php echo htmlspecialchars($product['product_image']); ?>" 
                                  class="product-image" 
-                                 alt="<?php echo htmlspecialchars($product['product_title']); ?>">
+                                 alt="<?php echo htmlspecialchars($product['product_title']); ?>"
+                                 onerror="this.src='../images/no-image.png'">
                         <?php else: ?>
                             <div class="product-image bg-secondary d-flex align-items-center justify-content-center">
                                 <i class="fa fa-image fa-5x text-white"></i>
@@ -199,10 +200,23 @@ if (!$product) {
                             </div>
                         <?php endif; ?>
                         
+                        <?php if ($is_logged_in): ?>
+                            <div class="mb-3">
+                                <label for="product-quantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="product-quantity" value="1" min="1" max="10" style="max-width: 100px;">
+                            </div>
+                        <?php endif; ?>
+                        
                         <div class="d-grid gap-2">
-                            <button class="btn btn-custom btn-lg" disabled>
-                                <i class="fa fa-shopping-cart me-2"></i>Add to Cart (Coming Soon)
-                            </button>
+                            <?php if ($is_logged_in): ?>
+                                <button class="btn btn-custom btn-lg" onclick="addProductToCart(<?php echo $product['product_id']; ?>)">
+                                    <i class="fa fa-shopping-cart me-2"></i>Add to Cart
+                                </button>
+                            <?php else: ?>
+                                <a href="../login/login.php" class="btn btn-custom btn-lg">
+                                    <i class="fa fa-shopping-cart me-2"></i>Login to Add to Cart
+                                </a>
+                            <?php endif; ?>
                             <a href="all_product.php" class="btn btn-outline-secondary">
                                 <i class="fa fa-arrow-left me-2"></i>Back to Products
                             </a>
@@ -230,7 +244,7 @@ if (!$product) {
     <script>
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                window.location.href = 'index.php?logout=1';
+                window.location.href = '../index.php?logout=1';
             }
         }
     </script>

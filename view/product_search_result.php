@@ -268,9 +268,15 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                                 <a href="single_product.php?id=<?php echo $product['product_id']; ?>" class="btn btn-sm btn-custom w-100 mb-2">
                                     <i class="fa fa-eye me-1"></i>View Details
                                 </a>
-                                <button class="btn btn-sm btn-outline-success w-100" disabled>
-                                    <i class="fa fa-shopping-cart me-1"></i>Add to Cart
-                                </button>
+                                <?php if ($is_logged_in): ?>
+                                    <button class="btn btn-sm btn-success w-100" onclick="addToCart(<?php echo $product['product_id']; ?>)">
+                                        <i class="fa fa-shopping-cart me-1"></i>Add to Cart
+                                    </button>
+                                <?php else: ?>
+                                    <a href="../login/login.php" class="btn btn-sm btn-outline-success w-100">
+                                        <i class="fa fa-shopping-cart me-1"></i>Login to Add to Cart
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

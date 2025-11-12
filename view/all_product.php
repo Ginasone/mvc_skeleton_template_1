@@ -11,14 +11,27 @@ $is_admin = check_admin();
 // get all products
 $products = view_all_products_ctr();
 
+// Ensure $products is always an array
+if ($products === false || !is_array($products)) {
+    $products = array();
+}
+
 // get all categories and brands for filters
 $all_categories = get_all_categories_ctr();
 $all_brands = get_all_brands_ctr();
 
+// Ensure categories and brands are arrays
+if ($all_categories === false || !is_array($all_categories)) {
+    $all_categories = array();
+}
+if ($all_brands === false || !is_array($all_brands)) {
+    $all_brands = array();
+}
+
 // pagination
 $items_per_page = 10;
 $total_items = count($products);
-$total_pages = ceil($total_items / $items_per_page);
+$total_pages = max(1, ceil($total_items / $items_per_page));
 $current_page = isset($_GET['page']) ? max(1, min($total_pages, (int)$_GET['page'])) : 1;
 $offset = ($current_page - 1) * $items_per_page;
 $products_to_display = array_slice($products, $offset, $items_per_page);
@@ -74,7 +87,7 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="index.php">
+            <a class="navbar-brand" href="../index.php">
                 <i class="fa fa-utensils me-2"></i>Taste of Africa
             </a>
             
@@ -85,7 +98,7 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
+                        <a class="nav-link" href="../index.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="all_product.php">All Products</a>
@@ -103,14 +116,14 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                 <ul class="navbar-nav">
                     <?php if (!$is_logged_in): ?>
                         <li class="nav-item me-2">
-                            <a class="btn btn-outline-secondary" href="login/login.php">Login</a>
+                            <a class="btn btn-outline-secondary" href="../login/login.php">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-custom" href="login/register.php">Register</a>
+                            <a class="btn btn-custom" href="../login/register.php">Register</a>
                         </li>
                     <?php elseif ($is_admin): ?>
                         <li class="nav-item me-2">
-                            <a class="btn btn-success" href="admin/product.php">
+                            <a class="btn btn-success" href="../admin/product.php">
                                 <i class="fa fa-box me-1"></i>Manage
                             </a>
                         </li>
@@ -191,9 +204,10 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                     <div class="col-md-4 col-lg-3 mb-4">
                         <div class="card product-card">
                             <?php if (!empty($product['product_image'])): ?>
-                                <img src="../<?php echo htmlspecialchars($product['product_image']); ?>"
+                                <img src="../<?php echo htmlspecialchars($product['product_image']); ?>" 
                                      class="card-img-top product-image" 
-                                     alt="<?php echo htmlspecialchars($product['product_title']); ?>">
+                                     alt="<?php echo htmlspecialchars($product['product_title']); ?>"
+                                     onerror="this.src='../images/no-image.png'">
                             <?php else: ?>
                                 <div class="card-img-top product-image bg-secondary d-flex align-items-center justify-content-center">
                                     <i class="fa fa-image fa-3x text-white"></i>
@@ -213,9 +227,15 @@ $products_to_display = array_slice($products, $offset, $items_per_page);
                                 <a href="single_product.php?id=<?php echo $product['product_id']; ?>" class="btn btn-sm btn-custom w-100 mb-2">
                                     <i class="fa fa-eye me-1"></i>View Details
                                 </a>
-                                <button class="btn btn-sm btn-outline-success w-100" disabled>
-                                    <i class="fa fa-shopping-cart me-1"></i>Add to Cart
-                                </button>
+                                <?php if ($is_logged_in): ?>
+                                    <button class="btn btn-sm btn-success w-100" onclick="addToCart(<?php echo $product['product_id']; ?>)">
+                                        <i class="fa fa-shopping-cart me-1"></i>Add to Cart
+                                    </button>
+                                <?php else: ?>
+                                    <a href="../login/login.php" class="btn btn-sm btn-outline-success w-100">
+                                        <i class="fa fa-shopping-cart me-1"></i>Login to Add to Cart
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
